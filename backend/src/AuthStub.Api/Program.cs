@@ -22,7 +22,7 @@ app.UseHttpsRedirection();
 
 app.MapPost("/api/auth/login", (LoginRequest request, IAuthService authService) => 
     {
-        var token = authService.Authenticate(request.Login, request.Password);
+        var token = authService.Authenticate(request.Username, request.Password);
         return token is null
             ? Results.Unauthorized()
             : Results.Ok(token);
@@ -33,13 +33,13 @@ app.Run();
 
 public interface IAuthService
  {
-    public string? Authenticate(string login, string password);
+    public string? Authenticate(string username, string password);
  }
  
  public sealed class AuthService: IAuthService
  {
-    string? IAuthService.Authenticate(string login, string password) =>
-    (login, password) switch
+    string? IAuthService.Authenticate(string username, string password) =>
+    (username, password) switch
     {
         ("intruder", "password") => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTc4NjMxMDE4MX0.ltPwax3dpLw2hjmwmBkQ0Ybir9bQt3dtstyFZeN-KtA",
         _ => null
@@ -49,7 +49,7 @@ public interface IAuthService
 public record LoginRequest
  {
     [Required(AllowEmptyStrings = false)]
-    public string Login { get; init; } = string.Empty;
+    public string Username { get; init; } = string.Empty;
     
     [Required(AllowEmptyStrings = false)]
     public string Password { get; init; } = string.Empty;
